@@ -127,3 +127,44 @@ def proposed_soft_bcd(
         q_bs_binary = optimize_q2_given_q1(q_relay, popularity, bs_cache, relays, modes)
         history.append(system_outage(q_relay, q_bs_binary, popularity, relays, modes))
     return q_relay, q_bs_binary, history
+
+
+def bcd_objective_history(
+    popularity: np.ndarray,
+    relay_cache: int,
+    bs_cache: int,
+    relays: int,
+    modes: ModeOutages,
+    iterations: int = 50,
+    soften_amplitude: float = 0.0,
+    seed: int = 20260522,
+) -> list[float]:
+    """Return the per-iteration objective trace used by the BCD convergence plot.
+
+    The trace records the objective at the beginning of each BCD iteration,
+    before the relay-cache subproblem is updated. This matches the original
+    MATLAB plotting logic and keeps the first point as the unoptimized relay
+    placement baseline.
+    """
+
+    rng = np.random.default_rng(seed)
+    q_relay = np.zeros_like(popularity)
+    history: list[float] = []
+
+    for _ in range(iterations):
+        q_bs_binary = optimize_q2_given_q1(
+            q_relay, popularity, bs_cache, relays, modes
+        )
+        history.append(
+            system_outage(q_relay, q_bs_binary, popularity, relays, modes)
+        )
+        if soften_amplitude > 0.0:
+            t = rng.uniform(0.0, soften_amplitude)
+            q_bs_for_q1 = np.where(q_bs_binary > 0.5, 1.0 - t, t)
+        else:
+            q_bs_for_q1 = q_bs_binary
+        q_relay = optimize_q1_given_q2(
+            q_bs_for_q1, popularity, relay_cache, relays, modes
+        )
+
+    return history

@@ -20,7 +20,12 @@ from .plotting import (
     save_csv,
     save_figure,
 )
-from .strategies import epc_strategy, mpc_strategy, proposed_soft_bcd
+from .strategies import (
+    bcd_objective_history,
+    epc_strategy,
+    mpc_strategy,
+    proposed_soft_bcd,
+)
 
 
 POWER_GRID = [20, 25, 30, 35, 40, 45]
@@ -187,8 +192,25 @@ def soft_bcd_figure(out_dir: Path) -> list[dict[str, object]]:
         dbm_to_snr(45.0, cfg.noise_power_w),
         cfg,
     )
-    _, _, soft_history = proposed_soft_bcd(popularity, 3, 10, 3, modes, soften=0.02)
-    _, _, bcd_history = proposed_soft_bcd(popularity, 3, 10, 3, modes, soften=0.0)
+    soft_history = bcd_objective_history(
+        popularity,
+        3,
+        10,
+        3,
+        modes,
+        iterations=50,
+        soften_amplitude=0.45,
+        seed=20260522,
+    )
+    bcd_history = bcd_objective_history(
+        popularity,
+        3,
+        10,
+        3,
+        modes,
+        iterations=50,
+        soften_amplitude=0.0,
+    )
     soft = np.array(soft_history)
     bcd = np.array(bcd_history)
 
