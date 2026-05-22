@@ -4,7 +4,6 @@ from pathlib import Path
 
 import numpy as np
 
-from . import paper_data
 from .model import (
     SystemConfig,
     analytical_mode_outages,
@@ -22,6 +21,9 @@ from .plotting import (
     save_figure,
 )
 from .strategies import epc_strategy, mpc_strategy, proposed_soft_bcd
+
+
+POWER_GRID = [20, 25, 30, 35, 40, 45]
 
 
 def _strategy_point(
@@ -58,47 +60,14 @@ def analysis_power_sweep(
     out_dir: Path,
     sweep: str,
     samples: int = 200_000,
-    use_paper_data: bool = False,
 ) -> list[dict[str, object]]:
     out_dir = Path(out_dir)
     cfg = SystemConfig()
     rows: list[dict[str, object]] = []
 
-    if use_paper_data:
-        source = (
-            paper_data.ANALYTICAL_RELAY_POWER
-            if sweep == "relay"
-            else paper_data.ANALYTICAL_BS_POWER
-        )
-        for relays, data in source.items():
-            for i, power in enumerate(paper_data.POWER_GRID):
-                rows.append(
-                    {
-                        "relays": relays,
-                        "power_dbm": float(power),
-                        "analytical": data["analytical"][i],
-                        "simulation": data["simulation"][i],
-                        "asymptotic": data["asymptotic"][i],
-                    }
-                )
-        stem = "fig_analytical_1_relay_power" if sweep == "relay" else "fig_analytical_2_bs_power"
-        xlabel = (
-            "Transmit SNR of relays (dBm)"
-            if sweep == "relay"
-            else "Transmit SNR of BS (dBm)"
-        )
-        save_csv(rows, out_dir, stem)
-        plot_analysis_curves(
-            rows,
-            out_dir,
-            stem,
-            xlabel,
-        )
-        return rows
-
     popularity = mzip_popularity(cfg.files, cfg.mzip_tau, cfg.mzip_eta)
     for relays in (2, 3, 4):
-        for power in paper_data.POWER_GRID:
+        for power in POWER_GRID:
             relay_dbm = float(power if sweep == "relay" else 45.0)
             bs_dbm = float(power if sweep == "bs" else 45.0)
             snr_r = dbm_to_snr(relay_dbm, cfg.noise_power_w)
@@ -138,43 +107,24 @@ def analysis_power_sweep(
 def strategy_power_sweep(
     out_dir: Path,
     sweep: str,
-    use_paper_data: bool = False,
 ) -> list[dict[str, object]]:
     out_dir = Path(out_dir)
     cfg = SystemConfig()
     rows: list[dict[str, object]] = []
 
-    if use_paper_data:
-        source = (
-            paper_data.STRATEGY_RELAY_POWER
-            if sweep == "relay"
-            else paper_data.STRATEGY_BS_POWER
-        )
-        for relays, data in source.items():
-            for i, power in enumerate(paper_data.POWER_GRID):
-                rows.append(
-                    {
-                        "relays": relays,
-                        "power_dbm": float(power),
-                        "proposed": data["proposed"][i],
-                        "mpc": data["mpc"][i],
-                        "epc": data["epc"][i],
-                    }
-                )
-    else:
-        for relays in (3, 5):
-            for power in paper_data.POWER_GRID:
-                vals = _strategy_point(
-                    relays,
-                    relay_power_dbm=float(power if sweep == "relay" else 45.0),
-                    bs_power_dbm=float(power if sweep == "bs" else 45.0),
-                    relay_cache=3,
-                    bs_cache=10,
-                    tau=0.0,
-                    eta=1.5,
-                    cfg=cfg,
-                )
-                rows.append({"relays": relays, "power_dbm": float(power), **vals})
+    for relays in (3, 5):
+        for power in POWER_GRID:
+            vals = _strategy_point(
+                relays,
+                relay_power_dbm=float(power if sweep == "relay" else 45.0),
+                bs_power_dbm=float(power if sweep == "bs" else 45.0),
+                relay_cache=3,
+                bs_cache=10,
+                tau=0.0,
+                eta=1.5,
+                cfg=cfg,
+            )
+            rows.append({"relays": relays, "power_dbm": float(power), **vals})
 
     stem = "fig_relay_power_strategy" if sweep == "relay" else "fig_bs_power_strategy"
     xlabel = (
@@ -190,34 +140,10 @@ def strategy_power_sweep(
 def parameter_sweep(
     out_dir: Path,
     parameter: str,
-    use_paper_data: bool = False,
 ) -> list[dict[str, object]]:
     out_dir = Path(out_dir)
     cfg = SystemConfig()
     rows: list[dict[str, object]] = []
-
-    if use_paper_data:
-        mapping = {
-            "c1": (paper_data.C1_CACHE_SIZE, "fig_c1_cache_size", "Relay cache size $C_1$", (2e-6, 1e-3)),
-            "c2": (paper_data.C2_CACHE_SIZE, "fig_c2_cache_size", "BS cache size $C_2$", (2e-6, 1e-3)),
-            "eta": (paper_data.ETA_SWEEP, "fig_eta_skewness", "Skewness parameter of MZipf distribution", (5e-8, 2e-3)),
-            "tau": (paper_data.TAU_SWEEP, "fig_tau_plateau", "Plateau parameter of MZipf distribution", (5e-6, 1.5e-3)),
-        }
-        data, stem, xlabel, ylim = mapping[parameter]
-        for relays in (3, 5):
-            for i, x in enumerate(data["x"]):
-                rows.append(
-                    {
-                        "relays": relays,
-                        parameter: float(x),
-                        "proposed": data[relays]["proposed"][i],
-                        "mpc": data[relays]["mpc"][i],
-                        "epc": data[relays]["epc"][i],
-                    }
-                )
-        save_csv(rows, out_dir, stem)
-        plot_strategy_curves(rows, out_dir, stem, parameter, xlabel, ylim=ylim)
-        return rows
 
     grids = {
         "c1": [1, 3, 5, 7, 9],
@@ -251,24 +177,20 @@ def parameter_sweep(
     return rows
 
 
-def soft_bcd_figure(out_dir: Path, use_paper_data: bool = False) -> list[dict[str, object]]:
+def soft_bcd_figure(out_dir: Path) -> list[dict[str, object]]:
     out_dir = Path(out_dir)
-    if use_paper_data:
-        soft = paper_data.SOFT_HISTORY
-        bcd = paper_data.BCD_HISTORY
-    else:
-        cfg = SystemConfig()
-        popularity = mzip_popularity(cfg.files, cfg.mzip_tau, cfg.mzip_eta)
-        modes = analytical_mode_outages(
-            3,
-            dbm_to_snr(45.0, cfg.noise_power_w),
-            dbm_to_snr(45.0, cfg.noise_power_w),
-            cfg,
-        )
-        _, _, soft_history = proposed_soft_bcd(popularity, 3, 10, 3, modes, soften=0.02)
-        _, _, bcd_history = proposed_soft_bcd(popularity, 3, 10, 3, modes, soften=0.0)
-        soft = np.array(soft_history)
-        bcd = np.array(bcd_history)
+    cfg = SystemConfig()
+    popularity = mzip_popularity(cfg.files, cfg.mzip_tau, cfg.mzip_eta)
+    modes = analytical_mode_outages(
+        3,
+        dbm_to_snr(45.0, cfg.noise_power_w),
+        dbm_to_snr(45.0, cfg.noise_power_w),
+        cfg,
+    )
+    _, _, soft_history = proposed_soft_bcd(popularity, 3, 10, 3, modes, soften=0.02)
+    _, _, bcd_history = proposed_soft_bcd(popularity, 3, 10, 3, modes, soften=0.0)
+    soft = np.array(soft_history)
+    bcd = np.array(bcd_history)
 
     count = min(len(soft), len(bcd))
     rows = [
@@ -293,12 +215,12 @@ def soft_bcd_figure(out_dir: Path, use_paper_data: bool = False) -> list[dict[st
     return rows
 
 
-def run_all(out_dir: Path, samples: int = 200_000, use_paper_data: bool = False) -> None:
+def run_all(out_dir: Path, samples: int = 200_000) -> None:
     out_dir = Path(out_dir)
-    analysis_power_sweep(out_dir, "relay", samples=samples, use_paper_data=use_paper_data)
-    analysis_power_sweep(out_dir, "bs", samples=samples, use_paper_data=use_paper_data)
-    strategy_power_sweep(out_dir, "relay", use_paper_data=use_paper_data)
-    strategy_power_sweep(out_dir, "bs", use_paper_data=use_paper_data)
+    analysis_power_sweep(out_dir, "relay", samples=samples)
+    analysis_power_sweep(out_dir, "bs", samples=samples)
+    strategy_power_sweep(out_dir, "relay")
+    strategy_power_sweep(out_dir, "bs")
     for parameter in ("c1", "c2", "eta", "tau"):
-        parameter_sweep(out_dir, parameter, use_paper_data=use_paper_data)
-    soft_bcd_figure(out_dir, use_paper_data=use_paper_data)
+        parameter_sweep(out_dir, parameter)
+    soft_bcd_figure(out_dir)

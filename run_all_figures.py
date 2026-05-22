@@ -22,13 +22,8 @@ def main() -> None:
         default=200_000,
         help="Monte Carlo samples per mode for the analytical verification figures.",
     )
-    parser.add_argument(
-        "--paper-data",
-        action="store_true",
-        help="Render the original MATLAB plotting arrays for exact paper-figure regression checks.",
-    )
     args = parser.parse_args()
-    run_all(args.out_dir, samples=args.samples, use_paper_data=args.paper_data)
+    run_all(args.out_dir, samples=args.samples)
     print(f"Wrote figures and CSV files to {args.out_dir.resolve()}")
 
 

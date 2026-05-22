@@ -9,7 +9,6 @@ from cache_outage.experiments import soft_bcd_figure
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--out-dir", default=DEFAULT_OUT_DIR)
-parser.add_argument("--paper-data", action="store_true")
 args = parser.parse_args()
 
-soft_bcd_figure(args.out_dir, use_paper_data=args.paper_data)
+soft_bcd_figure(args.out_dir)

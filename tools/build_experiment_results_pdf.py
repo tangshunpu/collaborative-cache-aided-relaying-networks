@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw, ImageFont, JpegImagePlugin  # noqa: F401
 
 
 ROOT = Path(__file__).resolve().parents[1]
-FIGURE_DIR = ROOT / "results" / "paper_data"
+FIGURE_DIR = ROOT / "results"
 OUT_FILE = ROOT / "results" / "experiment_results.pdf"
 
 FIGURES = [
