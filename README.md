@@ -17,6 +17,11 @@ Python code and result artifacts for:
 
 The corrected manuscript PDF is included for formula-audit transparency. It is not covered by the MIT code license.
 
+PDF artifacts:
+
+- [Experiment results PDF](results/experiment_results.pdf)
+- [Corrected redline manuscript PDF](paper/corrected_manuscript_redline.pdf)
+
 ## Core Results
 
 - The analytical outage expressions agree with Monte Carlo simulation over relay-power and BS-power sweeps.
