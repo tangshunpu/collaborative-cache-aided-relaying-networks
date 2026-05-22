@@ -13,7 +13,7 @@ from cache_outage.experiments import run_all
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Run all reproducible Python experiments for the cache-aided relaying paper."
+        description="Run all Python experiments for the cache-aided relaying paper."
     )
     parser.add_argument("--out-dir", type=Path, default=ROOT / "results")
     parser.add_argument(

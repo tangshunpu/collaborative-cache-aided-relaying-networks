@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this code or reproduced results, please cite the associated JSAC paper."
+message: "If you use this code or generated results, please cite the associated JSAC paper."
 title: "Collaborative cache-aided relaying networks: Performance evaluation and system optimization"
 authors:
   - family-names: Tang

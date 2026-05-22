@@ -49,7 +49,7 @@ def title_page() -> Image.Image:
     body = _font(30)
     small = _font(24)
     _center_text(draw, 300, "Collaborative Cache-Aided Relaying Networks", title)
-    _center_text(draw, 380, "Reproducible Experiment Results", _font(42))
+    _center_text(draw, 380, "Experiment Results", _font(42))
     lines = [
         "Paper: Collaborative cache-aided relaying networks:",
         "Performance evaluation and system optimization",
@@ -61,7 +61,7 @@ def title_page() -> Image.Image:
     for line in lines:
         _center_text(draw, y, line, body)
         y += 50
-    _center_text(draw, 1180, "Generated from the Python reproduction scripts in this repository.", small)
+    _center_text(draw, 1180, "Generated from the Python scripts in this repository.", small)
     return page
 
 
