@@ -222,17 +222,28 @@ def soft_bcd_figure(out_dir: Path) -> list[dict[str, object]]:
     save_csv(rows, out_dir, "fig_soft_bcd")
 
     import matplotlib.pyplot as plt
+    from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset
 
     apply_ieee_style()
     fig, ax = plt.subplots()
     x = [row["iteration"] for row in rows]
     ax.semilogy(x, [row["soft_bcd"] for row in rows], "r-", label="Soft-BCD")
     ax.semilogy(x, [row["bcd"] for row in rows], "k-", label="BCD")
-    ax.set_ylim(2.9e-4, 7e-4)
+    ax.set_ylim(2.9e-4, 8.5e-4)
     ax.set_xlabel("Iteration")
     ax.set_ylabel("Outage probability")
     ax.legend()
     ax.grid(False)
+
+    inset = inset_axes(ax, width="48%", height="48%", loc="upper right", borderpad=1.0)
+    inset.semilogy(x[1:], [row["soft_bcd"] for row in rows[1:]], "r-")
+    inset.semilogy(x[1:], [row["bcd"] for row in rows[1:]], "k-")
+    inset.set_xlim(2, 50)
+    inset.set_ylim(3.2e-4, 3.55e-4)
+    inset.tick_params(labelsize=8)
+    inset.grid(True, which="both", ls=":", lw=0.4)
+    mark_inset(ax, inset, loc1=2, loc2=4, fc="none", ec="0.4", lw=0.7)
+
     save_figure(fig, out_dir, "fig_soft_bcd")
     return rows
 
