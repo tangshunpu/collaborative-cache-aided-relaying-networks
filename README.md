@@ -13,14 +13,16 @@ Python code and result artifacts for:
 - A batch entry point: `run_all_figures.py`.
 - Generated result CSV/PNG/PDF/EPS files under `results/`.
 - Combined experiment result PDF: `results/experiment_results.pdf`.
-- Corrected redline manuscript PDF: `paper/corrected_manuscript_redline.pdf`.
+- Erratum PDF with typo corrections: `paper/erratum_typos_corrected_redline.pdf`.
 
-The corrected manuscript PDF is included for formula-audit transparency. It is not covered by the MIT code license.
+The erratum PDF is a redline manuscript that fixes formula typos identified in
+the outage analysis and cache-optimization derivations. It is included for
+formula-audit transparency and is not covered by the MIT code license.
 
 PDF artifacts:
 
 - [Experiment results PDF](results/experiment_results.pdf)
-- [Corrected redline manuscript PDF](paper/corrected_manuscript_redline.pdf)
+- [Erratum PDF: formula typo corrections](paper/erratum_typos_corrected_redline.pdf)
 
 ## Core Results
 
@@ -68,7 +70,7 @@ python figures/09_tau_plateau.py
 ```text
 .
 ├── figures/                    # one script per result figure
-├── paper/                      # corrected manuscript PDF and BibTeX
+├── paper/                      # erratum PDF and BibTeX
 ├── results/
 │   ├── experiment_results.pdf  # combined PDF of all result figures
 │   └── fig_*.{csv,png,pdf,eps} # per-figure outputs
@@ -99,4 +101,4 @@ The same BibTeX entry is also available in `paper/citation.bib`.
 
 ## License
 
-The Python code is released under the MIT License. The included manuscript PDF and paper content remain under their respective author/publisher rights; see `LICENSE-MANUSCRIPT.md`.
+The Python code is released under the MIT License. The included erratum PDF, manuscript text, and paper content remain under their respective author/publisher rights; see `LICENSE-MANUSCRIPT.md`.
