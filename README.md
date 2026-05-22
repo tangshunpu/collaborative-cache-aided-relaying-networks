@@ -1,0 +1,82 @@
+# Collaborative Cache-Aided Relaying Networks
+
+Reproducible Python code and result artifacts for:
+
+> Shunpu Tang, Ke He, Lunyuan Chen, Lisheng Fan, Xianfu Lei, and Rose Qingyang Hu,
+> "Collaborative cache-aided relaying networks: Performance evaluation and system optimization,"
+> IEEE Journal on Selected Areas in Communications, vol. 41, no. 3, pp. 706-719, 2023.
+
+## What Is Included
+
+- Python implementation of the outage expressions, Monte Carlo checks, and cache strategy comparisons.
+- One script per result figure under `figures/`.
+- A batch entry point: `run_all_figures.py`.
+- Reproduced result CSV/PNG/PDF/EPS files under `results/paper_data/`.
+- Combined experiment result PDF: `results/experiment_results.pdf`.
+- Corrected redline manuscript PDF: `paper/corrected_manuscript_redline.pdf`.
+
+The corrected manuscript PDF is included for reproducibility and formula-audit transparency. It is not covered by the MIT code license.
+
+## Core Results
+
+- The analytical outage expressions agree with Monte Carlo simulation over relay-power and BS-power sweeps.
+- The high-SNR asymptotic curves converge to the analytical curves in the high-power regime, validating the diversity-order behavior.
+- The proposed collaborative caching strategy gives lower outage probability than MPC and EPC across transmit-power, cache-size, and MZipf-popularity sweeps.
+- Increasing the number of relays and increasing cache sizes both reduce outage probability; BS-side bottlenecks become visible when BS transmit power is low.
+- The Soft-BCD procedure rapidly reduces the objective in the reproduced convergence curve. The implementation keeps the final BS cache vector feasible by quantization.
+
+## Quick Start
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python run_all_figures.py --paper-data
+```
+
+The `--paper-data` mode renders the numeric points extracted from the original MATLAB figure files, so it is the exact paper-figure regression mode.
+
+To recompute the figures from the corrected Python formulas and fixed Monte Carlo seeds:
+
+```bash
+python run_all_figures.py --samples 200000
+```
+
+Monte Carlo curves are stochastic; increasing `--samples` improves agreement for small outage probabilities.
+
+## Run Individual Figures
+
+```bash
+python figures/01_analytical_relay_power.py --samples 200000
+python figures/02_analytical_bs_power.py --paper-data
+python figures/03_soft_bcd.py --paper-data
+python figures/04_relay_power_strategy.py --paper-data
+python figures/05_bs_power_strategy.py --paper-data
+python figures/06_c1_cache_size.py --paper-data
+python figures/07_c2_cache_size.py --paper-data
+python figures/08_eta_skewness.py --paper-data
+python figures/09_tau_plateau.py --paper-data
+```
+
+## Repository Layout
+
+```text
+.
+├── figures/                    # one script per result figure
+├── paper/                      # corrected manuscript PDF and BibTeX
+├── results/
+│   ├── experiment_results.pdf  # combined PDF of all reproduced figures
+│   └── paper_data/             # per-figure CSV/PNG/PDF/EPS
+├── src/cache_outage/           # model, strategies, plotting, reference data
+├── tools/                      # helper scripts
+├── run_all_figures.py
+└── requirements.txt
+```
+
+## Citation
+
+Please cite the JSAC paper if you use this code or the reproduced results. A BibTeX entry is available in `paper/citation.bib`.
+
+## License
+
+The Python code is released under the MIT License. The included manuscript PDF and paper content remain under their respective author/publisher rights; see `LICENSE-MANUSCRIPT.md`.

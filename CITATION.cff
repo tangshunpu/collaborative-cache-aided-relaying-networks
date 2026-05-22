@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+message: "If you use this code or reproduced results, please cite the associated JSAC paper."
+title: "Collaborative cache-aided relaying networks: Performance evaluation and system optimization"
+authors:
+  - family-names: Tang
+    given-names: Shunpu
+  - family-names: He
+    given-names: Ke
+  - family-names: Chen
+    given-names: Lunyuan
+  - family-names: Fan
+    given-names: Lisheng
+  - family-names: Lei
+    given-names: Xianfu
+  - family-names: Hu
+    given-names: Rose Qingyang
+date-released: "2023-01-05"
+preferred-citation:
+  type: article
+  title: "Collaborative cache-aided relaying networks: Performance evaluation and system optimization"
+  authors:
+    - family-names: Tang
+      given-names: Shunpu
+    - family-names: He
+      given-names: Ke
+    - family-names: Chen
+      given-names: Lunyuan
+    - family-names: Fan
+      given-names: Lisheng
+    - family-names: Lei
+      given-names: Xianfu
+    - family-names: Hu
+      given-names: Rose Qingyang
+  journal: "IEEE Journal on Selected Areas in Communications"
+  volume: "41"
+  issue: "3"
+  start: 706
+  end: 719
+  year: 2023
+license: MIT
